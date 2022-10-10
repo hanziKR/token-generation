@@ -7,8 +7,8 @@ Required mysql database
 
 ### Generation system
 
-All access tokens are created with a generation.  
-Access tokens are only generated when the refresh token's generation is valid.
+All refresh tokens are created with a generation.  
+All access tokens are only created when the refresh token's generation is valid.
 
 ## Install
 
