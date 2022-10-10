@@ -3,11 +3,6 @@ import jwt from "jsonwebtoken"
 import util from "util"
 import { addDays, addMinutes } from "./time"
 
-//CREATE TABLE generation (
-//  id varchar() not null,
-//  generation int not null
-//);
-
 interface IToken {
     type: string,
     expires: string
@@ -30,7 +25,7 @@ class TokenGeneration {
         this.hmacKey = hmacKey;
         this.getConnection = util.promisify(this.pool.getConnection).bind(this.pool);
     }
-    async getGeneration(id: string): Promise<number> {
+    private async getGeneration(id: string): Promise<number> {
         const connection = await this.getConnection();
         const query = util.promisify(connection.query).bind(connection);
 
@@ -48,6 +43,12 @@ class TokenGeneration {
         finally {
             connection.release();
         }
+    }
+    async addGeneration(id: string): Promise<void> {
+        const connection = await this.getConnection();
+        const query = util.promisify(connection.query).bind(connection);
+
+        query(`UPDATE generation set generation=generation+1 where id="${id}";`);
     }
     async checkGeneration(token: IRefreshToken): Promise<boolean> {
         const _generation = await this.getGeneration(token.id);
@@ -96,6 +97,9 @@ class TokenGeneration {
         } catch (e) {
             return null;
         }
+    }
+    close() {
+        this.pool.end();
     }
 }
 
